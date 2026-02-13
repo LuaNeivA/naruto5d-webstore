@@ -1,6 +1,9 @@
-# Naruto 5D Web Store
+<div align="center">
+  <img src="./assets/logo.png" width="250" alt="Naruto 5D Logo">
+  <h1>Naruto 5D Web Store</h1>
+</div>
 
-Documentação técnica da plataforma oficial de vendas do servidor **Naruto 5D**. Este projeto é um e-commerce fullstack desenvolvido para gerenciar transações automatizadas de itens digitais para Minecraft, com suporte a pagamentos nacionais e internacionais.
+Documentação técnica da plataforma oficial de vendas do servidor **Naruto 5D**. Este projeto consiste em um ecossistema fullstack desenvolvido para gerenciar transações automatizadas de itens digitais e vantagens in-game para Minecraft.
 
 ---
 
@@ -11,61 +14,61 @@ O sistema está em operação e pode ser acessado em:
 ---
 
 ## Visão Geral
-A Naruto 5D Web Store foi projetada para solucionar o desafio de entrega instantânea de produtos in-game. O sistema automatiza todo o fluxo: desde a detecção da moeda local do usuário até a geração dinâmica de chaves criptográficas de resgate após a confirmação do pagamento.
+A Naruto 5D Web Store foi projetada para automatizar o ciclo completo de venda e entrega de produtos digitais. A aplicação resolve desafios críticos de e-commerce, como a detecção dinâmica de moeda baseada em geolocalização e a geração de chaves criptográficas de uso único no momento da confirmação do pagamento.
 
 ---
 
 ## Tecnologias Utilizadas
 
-### Core
-- **Frontend:** Next.js 15 (App Router) & React 19
-- **Linguagem:** TypeScript
-- **Estilização:** Tailwind CSS 4
+### Frontend e Interface
+- **Next.js 15 (App Router):** Framework principal para renderização híbrida e performance.
+- **React 19:** Utilização de hooks avançados para gerenciamento de estado e contexto.
+- **Tailwind CSS 4:** Estilização baseada em design tokens e responsividade extrema.
 
 ### Infraestrutura e Backend
-- **Banco de Dados:** Supabase (PostgreSQL)
-- **Realtime:** Supabase Channels (Websockets)
-- **E-mail Transacional:** Resend API
+- **Supabase (PostgreSQL):** Persistência de dados e gerenciamento de banco de dados relacional.
+- **Supabase Realtime:** Implementação de WebSockets para atualização instantânea da interface.
+- **Resend API:** Infraestrutura para envio de e-mails transacionais com alta taxa de entregabilidade.
 
 ### Gateways de Pagamento
-- **Brasil (BRL):** Mercado Pago (Integração com Pix e Checkout Transparente)
-- **Internacional (USD):** Stripe (Suporte a Apple Pay, Google Pay e Cartões Globais)
+- **Mercado Pago (BRL):** Integração para o mercado nacional com foco em aprovação via Pix.
+- **Stripe (USD):** Solução para o mercado internacional com suporte a cartões globais, Apple Pay e Google Pay.
 
 ---
 
-## Arquitetura e Diferenciais Técnicos
+## Diferenciais Técnicos
 
-### Localização Dinâmica
-O sistema implementa uma camada de geolocalização via IP que ajusta automaticamente a interface. Usuários brasileiros acessam o fluxo em Reais via Mercado Pago, enquanto usuários estrangeiros são direcionados ao fluxo em Dólares via Stripe, otimizando as taxas de conversão.
+### Inteligência de Geolocalização
+O sistema implementa uma camada de middleware que identifica a origem do tráfego via IP. Essa lógica ajusta automaticamente a exibição dos preços (Real ou Dólar) e renderiza o gateway de pagamento mais adequado para a região do usuário, otimizando as taxas de conversão globais.
 
-### Fábrica de Códigos (Code Factory)
-Para garantir segurança e estoque infinito, o sistema não utiliza códigos pré-gerados. Desenvolvi um algoritmo que, no momento da confirmação do pagamento (via Webhook), gera um hash único baseado no tipo de produto e timestamp. Esse código é atrelado à transação e enviado simultaneamente para a interface do usuário e para o e-mail cadastrado.
+### Arquitetura Code Factory
+Para eliminar a necessidade de estoques manuais, desenvolvi um algoritmo de geração dinâmica. No momento em que o Webhook do gateway confirma a transação, o backend processa o `type_id` do produto e gera um hash único. Este código é registrado no banco de dados e entregue ao usuário em milissegundos.
 
-### Sincronização em Tempo Real
-A interface de checkout utiliza listeners do Supabase para monitorar alterações no banco de dados. Assim que o webhook do provedor de pagamento processa a transação, a tela do cliente é atualizada instantaneamente com o código de resgate, eliminando a necessidade de atualização manual da página.
+### Sincronização Realtime de Pedidos
+A página de checkout opera como uma Single Page Application (SPA) que escuta eventos do banco de dados. Através de canais de broadcast do Supabase, o cliente recebe o feedback visual do pagamento e o código de resgate sem a necessidade de atualizar a página ou realizar requisições manuais de status.
 
 ---
 
 ## Fluxo de Operação
 
-1. **Checkout:** O usuário informa o e-mail e o sistema valida a moeda baseada na localização.
-2. **Processamento:** A transação é enviada ao gateway (Mercado Pago ou Stripe).
-3. **Confirmação:** O gateway dispara uma notificação assíncrona (Webhook) para a API da loja.
-4. **Entrega:** O backend valida a assinatura do webhook, gera o código de resgate dinâmico, registra o pedido no banco de dados e dispara o e-mail transacional via Resend.
-5. **Interface:** O código é exibido em tempo real na tela final do checkout.
+1. **Checkout:** O usuário informa o e-mail de recebimento e o sistema valida a moeda local.
+2. **Processamento:** A requisição de pagamento é enviada de forma segura ao provedor (Stripe ou Mercado Pago).
+3. **Webhook:** O gateway envia uma notificação assinada para a rota de API da aplicação.
+4. **Fulfillment:** O servidor valida a assinatura, gera o código de resgate, registra a ordem e dispara o e-mail via Resend.
+5. **Entrega:** O componente de checkout detecta a mudança de status via WebSocket e exibe o código na tela.
 
 ---
 
 ## Demonstração Visual
 
-| Catálogo de Produtos | Checkout Inteligente | Entrega Realtime |
+| Catálogo de Produtos | Checkout Híbrido | Entrega do Código |
 |---|---|---|
 | <img src="./assets/home.png" width="300"> | <img src="./assets/checkout.png" width="300"> | <img src="./assets/sucesso.png" width="300"> |
 
 ---
 
-## Segurança e Privacidade
-O código-fonte deste projeto é mantido de forma privada para proteger a lógica proprietária de geração de chaves e a integridade do servidor Naruto 5D. Este repositório serve como portfólio técnico, demonstrando expertise em arquitetura fullstack, integrações financeiras e sistemas realtime.
+## Segurança e Propriedade Intelectual
+O código-fonte deste projeto é mantido sob sigilo para proteger a lógica proprietária de geração de chaves e a integridade do servidor Naruto 5D. Este repositório cumpre a função de documentação técnica para demonstração de competências em desenvolvimento de sistemas financeiros, arquitetura fullstack e integrações realtime.
 
 ---
 **Desenvolvido por Luan Neiva**  
