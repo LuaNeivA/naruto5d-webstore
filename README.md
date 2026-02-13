@@ -1,63 +1,92 @@
-# 🍜 Naruto 5D Web Store - Sistema de Vendas Automáticas
+# 🍜 Naruto 5D Web Store - E-commerce de Alta Performance
 
-Bem-vindo à documentação técnica da loja oficial do servidor **Naruto 5D**. Este projeto consiste em uma plataforma web de alto desempenho desenvolvida para gerenciar a venda de vantagens (VIPs), itens e poderes para jogadores de Minecraft, com entrega totalmente automatizada.
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-O projeto foi construído utilizando as tecnologias mais modernas do ecossistema Fullstack:
-
-- **Frontend:** [Next.js 15](https://nextjs.org/) (App Router), Tailwind CSS, Lucide React.
-- **Backend/Serveless:** [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers).
-- **Banco de Dados & Realtime:** [Supabase](https://supabase.com/) (PostgreSQL).
-- **Gateways de Pagamento:** Mercado Pago (Brasil/BRL) e Stripe (Internacional/USD).
-- **Envio de E-mails:** [Resend](https://resend.com/).
-- **Hospedagem:** Vercel.
+<div align="center">
+  <img src="./assets/logo.png" width="200" alt="Naruto 5D Logo">
+  <br />
+  <a href="https://www.naruto5d.com.br">
+    <img src="https://img.shields.io/badge/Acessar_Loja_Ao_Vivo-FF9900?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Site">
+  </a>
+  <img src="https://img.shields.io/badge/Status-Em_Produção-4ade80?style=for-the-badge" alt="Status">
+</div>
 
 ---
 
-## 💎 Funcionalidades Principais
-
-### 1. Detecção Inteligente de Localização
-O sistema identifica automaticamente o país do usuário através do endereço IP. 
-- **Brasileiros:** Visualizam preços em Reais (BRL) e utilizam o **Mercado Pago** (Pix/Cartão).
-- **Estrangeiros:** Visualizam preços em Dólares (USD) e utilizam o **Stripe** (Cartão/Apple Pay/Google Pay).
-
-### 2. Fábrica de Códigos Dinâmicos
-Em vez de um estoque pré-carregado, desenvolvi um algoritmo de geração de hashes criptográficos que cria o código de resgate no momento exato da confirmação do pagamento (Webhook). Cada código contém um prefixo que identifica o item no servidor Minecraft.
-
-### 3. Dashboard Realtime
-Utilizando o recurso de **Realtime do Supabase**, o checkout monitora as mudanças no banco de dados via Webhook. Assim que o pagamento é aprovado, a interface do usuário atualiza instantaneamente para exibir o código gerado, sem necessidade de refresh.
-
-### 4. Entrega via E-mail
-Integração com a API Resend para envio automático de recibos e instruções de resgate com templates HTML profissionais.
+## 🔗 Link Oficial do Projeto
+O sistema está em operação real e pode ser acessado em:  
+👉 **[https://www.naruto5d.com.br](https://www.naruto5d.com.br)**
 
 ---
 
-## 📸 Demonstração Visual
+## 📝 Sobre o Projeto
+Esta é a plataforma oficial de vendas do servidor **Naruto 5D**. O projeto foi desenvolvido para oferecer uma experiência de compra fluida, segura e totalmente automatizada para jogadores de Minecraft no Brasil e no exterior.
 
-| Home Page | Checkout Híbrido |
-|---|---|
-| <img src="./assets/home.png" width="400"> | <img src="./assets/checkout.png" width="400"> |
-
-*(Adicione aqui um GIF de você comprando algo e o código aparecendo na tela)*
+A aplicação resolve o desafio de vender itens digitais com **entrega instantânea**, integrando múltiplos gateways de pagamento e um sistema de geração dinâmica de chaves de resgate.
 
 ---
 
-## 🛠️ Arquitetura do Sistema
+## 🚀 Stack Tecnológica
 
-1. **Pedido Iniciado:** O cliente escolhe o item e insere o e-mail.
-2. **Gateway:** Requisição enviada via API para Mercado Pago ou Stripe.
-3. **Webhook:** O gateway de pagamento notifica minha rota `/api/webhook`.
-4. **Processamento:** O backend valida a assinatura do webhook, gera o código dinâmico e salva no banco.
-5. **Entrega:** O código é exibido na tela do cliente em tempo real e enviado por e-mail via Resend.
-6. **Resgate:** O jogador utiliza o comando `/resgatar <codigo>` dentro do servidor Minecraft.
+O ecossistema do projeto utiliza as tecnologias mais modernas para garantir escalabilidade e tempo de resposta imediato:
+
+- **Frontend:** [Next.js 15](https://nextjs.org/) (App Router & React 19).
+- **Estilização:** [Tailwind CSS 4](https://tailwindcss.com/) com design responsivo e efeitos de Glow/Glassmorphism.
+- **Backend/API:** Next.js Serverless Functions.
+- **Banco de Dados:** [Supabase](https://supabase.com/) (PostgreSQL).
+- **Comunicação Realtime:** Supabase Channels (Websockets para atualização de checkout).
+- **Gateways de Pagamento:** 
+  - **Brasil:** Mercado Pago (Pix com aprovação imediata).
+  - **Internacional:** Stripe (Cartões, Apple Pay e Google Pay).
+- **E-mail Transacional:** [Resend](https://resend.com/) com templates em React Email.
 
 ---
 
-## 🔒 Código Fonte
-*Este projeto possui código fechado por razões de segurança e proteção de propriedade intelectual do servidor Naruto 5D. Esta documentação serve como demonstração técnica de habilidades em desenvolvimento Fullstack, integrações de APIs de pagamento e sistemas em tempo real.*
+## 💎 Diferenciais Técnicos
+
+### 1. Checkout Híbrido & Geolocalização
+O sistema detecta automaticamente a origem do usuário via IP. 
+- Jogadores brasileiros veem preços em **BRL** e pagam via Pix. 
+- Jogadores internacionais veem preços em **USD** e utilizam o Stripe, garantindo a menor taxa de conversão e maior facilidade global.
+
+### 2. Fábrica de Códigos Dinâmicos (Anti-Fraude)
+Diferente de lojas comuns, este sistema não trabalha com "estoque de chaves". Utilizei uma lógica de **Code Factory** que gera um hash criptográfico único no momento do Webhook de confirmação. Isso impede o esgotamento de itens e garante que cada código seja atrelado a uma transação verificada.
+
+### 3. Sincronização em Tempo Real
+A página de checkout não precisa de atualização manual. Implementei um listener de banco de dados (Realtime) que monitora o status do pedido. Assim que o Webhook do gateway confirma o pagamento, o código de resgate aparece instantaneamente na tela do cliente.
+
+### 4. Entrega Multicanal
+O código gerado é entregue em três frentes:
+1. Interface do site (Realtime).
+2. E-mail formatado (HTML profissional via Resend).
+3. Banco de dados (Histórico de pedidos).
 
 ---
-Desenvolvido por [Luan Neiva](https://github.com/LuaNeivA)
+
+## 🛠️ Arquitetura de Fluxo
+
+1. **Seleção:** Jogador escolhe um item (Ex: VIP ou Skilltree).
+2. **Checkout:** Inserção de e-mail e detecção automática de moeda.
+3. **Pagamento:** Processamento via Mercado Pago ou Stripe.
+4. **Webhook:** O gateway notifica a API da loja.
+5. **Lógica de Entrega:** O servidor valida o pagamento, chama o `codeGenerator`, salva no banco e dispara o e-mail.
+6. **Interface:** O cliente recebe o código na tela sem dar F5.
+
+---
+
+## 📸 Demonstração
+
+| Página Inicial (Catálogo) | Checkout Inteligente | Entrega do Código |
+|---|---|---|
+| <img src="./assets/home.png" width="300"> | <img src="./assets/checkout.png" width="300"> | <img src="./assets/sucesso.png" width="300"> |
+
+---
+
+## 🔒 Informação sobre o Código Fonte
+Por questões de segurança e confidencialidade, o código-fonte deste projeto é **privado**. Esta página serve como portfólio técnico para demonstrar proficiência em:
+- Integração complexa de APIs financeiras.
+- Gerenciamento de estado e arquitetura Fullstack.
+- Segurança em Webhooks e processamento de dados sensíveis.
+- UI/UX focada em conversão para o público gamer.
+
+---
+**Desenvolvido por [Luan Neiva](https://github.com/LuaNeivA)**  
+*Especialista em soluções Fullstack e Modelagem 3D.*
